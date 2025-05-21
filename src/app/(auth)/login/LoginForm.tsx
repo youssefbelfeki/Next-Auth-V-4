@@ -3,7 +3,7 @@ import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
 import { IoMdLogIn } from "react-icons/io";
 import React, { useState } from "react";
-import { LoginSchema } from "@/app/utils/validationSchema";
+import { LoginSchema } from "@/utils/validationSchema";
 import Alert from "@/app/components/Alert";
 import Spinner from "@/app/components/Spinner";
 import { loginAction } from "@/actions/auth.action";
