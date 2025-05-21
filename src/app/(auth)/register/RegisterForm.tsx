@@ -5,7 +5,7 @@ import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { BsPersonPlus } from "react-icons/bs";
 import { registerAction } from "@/actions/auth.action";
-import { RegisterSchema } from "@/app/utils/validationSchema";
+import { RegisterSchema } from "@/utils/validationSchema";
 import Alert from "@/app/components/Alert";
 import Spinner from "@/app/components/Spinner";
 
@@ -25,14 +25,20 @@ const RegisterForm = () => {
     if (!validation.success) {
       return setClientError(validation.error.errors[0].message);
     }
+    setLoading(true);
     registerAction({ name, email, password }).then((result) => {
-      if (result?.error) setServerError(result.error);
-      if (result?.success) setServerSuccess(result.success);
+      if (result?.success) {
+        setName("");
+        setEmail("");
+        setPassword("");
+        setClientError("");
+        setServerError("");
+        setServerSuccess(result.message);
+      }
+      if (!result?.success) setServerSuccess(result.message);
     });
-    setName("");
-    setEmail("");
-    setPassword("");
-    setClientError("");
+
+    setLoading(false);
   };
   return (
     <form onSubmit={formSubmitHandler}>
@@ -45,7 +51,8 @@ const RegisterForm = () => {
           id="name"
           className="border border-slate-500 rounded-md px-2 py-1 text-xl"
           value={name}
-          onChange={(e)=>setName(e.target.value)}
+          onChange={(e) => setName(e.target.value)}
+          disabled={loading}
         />
       </div>
       <div className="flex flex-col mb-3">
@@ -58,6 +65,7 @@ const RegisterForm = () => {
           className="border border-slate-500 rounded-md px-2 py-1 text-xl"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          disabled={loading}
         />
       </div>
       <div className="flex flex-col mb-3">
@@ -70,6 +78,7 @@ const RegisterForm = () => {
           className="border border-slate-500 rounded-md px-2 py-1 text-xl"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          disabled={loading}
         />
       </div>
       {(clientError || serverError) && (
@@ -81,7 +90,13 @@ const RegisterForm = () => {
         className="disabled:bg-gray-300 flex items-center justify-center bg-slate-800 hover:bg-slate-900 mt-4 text-white cursor-pointer rounded-lg w-full p-2 text-xl "
         type="submit"
       >
-        {loading ? <Spinner /> : <><BsPersonPlus className="me-1 text-2xl" /> Register</>}
+        {loading ? (
+          <Spinner />
+        ) : (
+          <>
+            <BsPersonPlus className="me-1 text-2xl" /> Register
+          </>
+        )}
       </button>
       <div className="flex items-center justify-center gap-6 mt-6">
         <div className="border bg-blue-100 hover:bg-blue-200 rounded px-4 py-2 cursor-pointer w-1/2  flex justify-center items-center">
