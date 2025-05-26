@@ -35,10 +35,12 @@ const RegisterForm = () => {
         setServerError("");
         setServerSuccess(result.message);
       }
-      if (!result?.success) setServerSuccess(result.message);
+      if (!result?.success) {
+        setServerSuccess("");
+        setServerError(result.message)
+      }
+      setLoading(false);
     });
-
-    setLoading(false);
   };
   return (
     <form onSubmit={formSubmitHandler}>
