@@ -13,6 +13,7 @@ const LoginForm = () => {
   const [clientError, setClientError] = useState("");
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState("");
+  const [serverSuccess, setServerSuccess] = useState("");
 
   const formSubmitHandler = (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,6 +23,13 @@ const LoginForm = () => {
     }
     setLoading(true);
     loginAction({ email, password }).then((result) => {
+      if (result?.success) {
+        setEmail("");
+        setPassword("");
+        setClientError("");
+        setServerError("");
+        setServerSuccess(result.message);
+      }
       if (!result?.success) setServerError(result.message);
       setLoading(false);
     });
@@ -58,6 +66,7 @@ const LoginForm = () => {
       {(clientError || serverError) && (
         <Alert type="error" message={clientError || serverError} />
       )}
+      {serverSuccess && <Alert type="success" message={serverSuccess} />}
       <button
         disabled={loading}
         className="disabled:bg-gray-300 flex items-center justify-center bg-slate-800 hover:bg-slate-900 mt-4 text-white cursor-pointer rounded-lg w-full p-2 text-xl "
