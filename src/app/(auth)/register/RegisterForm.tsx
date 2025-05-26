@@ -1,13 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import { FaGithub } from "react-icons/fa";
-import { FcGoogle } from "react-icons/fc";
 import { BsPersonPlus } from "react-icons/bs";
 import { registerAction } from "@/actions/auth.action";
 import { RegisterSchema } from "@/utils/validationSchema";
 import Alert from "@/app/components/Alert";
 import Spinner from "@/app/components/Spinner";
+import SocialProviders from "@/app/components/SocialProviders";
 
 const RegisterForm = () => {
   const [name, setName] = useState("");
@@ -100,14 +99,7 @@ const RegisterForm = () => {
           </>
         )}
       </button>
-      <div className="flex items-center justify-center gap-6 mt-6">
-        <div className="border bg-blue-100 hover:bg-blue-200 rounded px-4 py-2 cursor-pointer w-1/2  flex justify-center items-center">
-          <FcGoogle className="text-4xl" />
-        </div>
-        <div className="border bg-slate-100 hover:bg-slate-200 rounded px-4 py-2 cursor-pointer w-1/2  flex justify-center items-center">
-          <FaGithub className="text-4xl" />
-        </div>
-      </div>
+      <SocialProviders />
     </form>
   );
 };
