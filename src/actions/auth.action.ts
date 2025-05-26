@@ -1,6 +1,7 @@
 "use server";
 import { signIn, signOut } from "@/auth";
 import { generateVerificationToken } from "@/utils/generateToken";
+import { sendVerificationToken } from "@/utils/mail";
 import { prisma } from "@/utils/prisma";
 import { LoginSchema, RegisterSchema } from "@/utils/validationSchema";
 import * as bcrypt from "bcryptjs";
@@ -17,17 +18,20 @@ export const loginAction = async (data: LoginDto) => {
   }
   const { email, password } = validation.data;
 
-  const user = await prisma.user.findUnique({where: {email}})
-  if (!user || !user.email || !user.password) {
-    return { success: false, message: "Invalid Credential" };
-  }
-
-  if (!user.emailVerified) {
-    const verificationToken = await generateVerificationToken(email)
-    //@Todo -> send email
-    return { success: true, message: "Email Sent , Verify Your Account" };
-  }
   try {
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user || !user.email || !user.password) {
+      return { success: false, message: "Invalid Credential" };
+    }
+
+    if (!user.emailVerified) {
+      const verificationToken = await generateVerificationToken(email);
+      await sendVerificationToken(
+        verificationToken.email,
+        verificationToken.token
+      );
+      return { success: true, message: "Email Sent , Verify Your Account" };
+    }
     await signIn("credentials", { email, password, redirectTo: "/profile" });
   } catch (error) {
     if (error instanceof AuthError) {
@@ -57,10 +61,12 @@ export const registerAction = async (data: registerDto) => {
     await prisma.user.create({
       data: { email, name, password: hashedPassword },
     });
-    const verificationToken = await generateVerificationToken(email)
-    
+    const verificationToken = await generateVerificationToken(email);
+    await sendVerificationToken(
+      verificationToken.email,
+      verificationToken.token
+    );
     return { success: true, message: "Email Sent , Verify Your Account" };
-
   } catch (error) {
     return {
       success: false,
