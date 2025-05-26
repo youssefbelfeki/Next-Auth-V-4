@@ -4,6 +4,7 @@ import { prisma } from "./utils/prisma";
 import * as bcrypt from "bcryptjs";
 import { LoginSchema } from "./utils/validationSchema";
 import Credentials from "next-auth/providers/credentials";
+import Google from 'next-auth/providers/google';
 
 export default {
   providers: [
@@ -23,6 +24,10 @@ export default {
     GitHub({
       clientId: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET
+    }),
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET
     }),
   ],
 } satisfies NextAuthConfig;
