@@ -6,7 +6,7 @@ import { LoginSchema } from "./utils/validationSchema";
 import Credentials from "next-auth/providers/credentials";
 import Google from 'next-auth/providers/google';
 
-export default {
+const authConfig = {
   providers: [
     Credentials({
       async authorize(data) {
@@ -31,3 +31,6 @@ export default {
     }),
   ],
 } satisfies NextAuthConfig;
+
+
+export default authConfig;
