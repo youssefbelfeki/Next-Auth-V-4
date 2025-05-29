@@ -3,6 +3,7 @@ import { signIn, signOut } from "@/auth";
 import { generateVerificationToken } from "@/utils/generateToken";
 import { sendVerificationToken } from "@/utils/mail";
 import { prisma } from "@/utils/prisma";
+import { ActionType } from "@/utils/type";
 import { LoginSchema, RegisterSchema } from "@/utils/validationSchema";
 import * as bcrypt from "bcryptjs";
 import { AuthError } from "next-auth";
@@ -11,7 +12,7 @@ import { z } from "zod";
 type LoginDto = z.infer<typeof LoginSchema>;
 type registerDto = z.infer<typeof RegisterSchema>;
 
-export const loginAction = async (data: LoginDto) => {
+export const loginAction = async (data: LoginDto): Promise<ActionType> => {
   const validation = LoginSchema.safeParse(data);
   if (!validation.success) {
     return { success: false, message: "Invalid Credential" };
@@ -47,7 +48,9 @@ export const loginAction = async (data: LoginDto) => {
   return { success: true, message: "Logged Successfully" };
 };
 
-export const registerAction = async (data: registerDto) => {
+export const registerAction = async (
+  data: registerDto
+): Promise<ActionType> => {
   const validation = RegisterSchema.safeParse(data);
   if (!validation.success)
     return { success: false, message: "Invalid Credentials" };
@@ -75,6 +78,6 @@ export const registerAction = async (data: registerDto) => {
   }
 };
 
-export const logoutAction = async () => {
+export const logoutAction = async (): Promise<void> => {
   await signOut();
 };

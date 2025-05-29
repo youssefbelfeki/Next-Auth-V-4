@@ -1,16 +1,13 @@
 "use client";
-import { IoMdLogIn } from "react-icons/io";
+import { CiMail } from "react-icons/ci";
 import React, { useState } from "react";
-import { LoginSchema } from "@/utils/validationSchema";
 import Alert from "@/app/components/Alert";
 import Spinner from "@/app/components/Spinner";
-import { loginAction } from "@/actions/auth.action";
-import SocialProviders from "@/app/components/SocialProviders";
 import Link from "next/link";
-const LoginForm = () => {
+import { ForgotPasswordSchema } from "@/utils/validationSchema";
+import { forgotPAsswordAction } from "@/actions/password.action";
+const ForgotPasswordForm = () => {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
   const [clientError, setClientError] = useState("");
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState("");
@@ -18,22 +15,25 @@ const LoginForm = () => {
 
   const formSubmitHandler = (e: React.FormEvent) => {
     e.preventDefault();
-    const validation = LoginSchema.safeParse({ email, password });
+    const validation = ForgotPasswordSchema.safeParse({ email });
     if (!validation.success) {
       return setClientError(validation.error.errors[0].message);
     }
     setLoading(true);
-    loginAction({ email, password }).then((result) => {
-      if (result?.success) {
-        setEmail("");
-        setPassword("");
+    forgotPAsswordAction({ email }).then((result) => {
+      if (result.success) {
         setClientError("");
         setServerError("");
+        setEmail("");
         setServerSuccess(result.message);
       }
-      if (!result?.success) setServerError(result.message);
-      setLoading(false);
-    });
+      if (!result.success) {
+        setServerSuccess("");
+        setServerError(result.message);
+      }
+      setLoading(false)
+    })
+    .catch(() => setServerError("Something went wrong"))
   };
 
   return (
@@ -51,24 +51,6 @@ const LoginForm = () => {
           disabled={loading}
         />
       </div>
-      <div className="flex flex-col mb-3">
-        <label className="p-1 text-slate-500 font-bold" htmlFor="password">
-          Password
-        </label>
-        <input
-          type="password"
-          id="password"
-          className="border border-slate-500 rounded-md px-2 py-1 text-xl"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          disabled={loading}
-        />
-      </div>
-      <div className="mb-3">
-        <Link className="px-1 underline text-blue-800" href="/forgot-password">
-          Forgot Password ?
-        </Link>
-      </div>
       {(clientError || serverError) && (
         <Alert type="error" message={clientError || serverError} />
       )}
@@ -82,13 +64,17 @@ const LoginForm = () => {
           <Spinner />
         ) : (
           <>
-            <IoMdLogIn className="me-1 text-2xl" /> Login
+            <CiMail className="me-1 text-2xl" /> Submit
           </>
         )}
       </button>
-      <SocialProviders />
+      <div className="mt-2 p-1">
+        <Link className="underline text-blue-500" href="/login">
+          Back to login
+        </Link>
+      </div>
     </form>
   );
 };
 
-export default LoginForm;
+export default ForgotPasswordForm;
